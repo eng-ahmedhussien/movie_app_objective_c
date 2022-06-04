@@ -1,49 +1,104 @@
-//
-//  TableViewController.m
-//  movieApp
-//
-//  Created by Ahmed Hussien on 02/11/1443 AH.
-//
-
 #import "TableViewController.h"
 
 @interface TableViewController ()
 
+@property (strong, nonatomic) NSArray *dataa;
 @end
 
 @implementation TableViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+        _data=[NSMutableData new];
+        _dict=[NSDictionary new];
+        _arrayOfData=[NSMutableArray new];
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+//        //download
+//        _data = [NSData dataWithContentsOfURL:[NSURL URLWithString: @"https://api.androidhive.info/json/movies.json"]];
+//        // Parse JSON
+//        _arrayOfData = [NSJSONSerialization JSONObjectWithData:_data options:kNilOptions error:nil];
+
+
+    NSURL *url = [NSURL URLWithString:@"https://api.androidhive.info/json/movies.json"];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+    [connection start];
 }
 
-#pragma mark - Table view data source
 
+#pragma mark - connection
+-(void) connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+    [self.data appendData:data];
+}
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+   
+     _arrayOfData = [NSJSONSerialization JSONObjectWithData:self.data options:NSJSONReadingJSON5Allowed error:nil];
+//
+//    if(_arrayOfData!=nil)
+//    {
+//
+//        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Alert" message:@"data loaded succssfully" preferredStyle:UIAlertControllerStyleAlert];
+//        UIAlertAction* action = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {}];
+//        [alert addAction:action];
+//        [self presentViewController:alert animated:YES completion:nil];
+////
+////        for (int i=0;i<_arrayOfData.count ; i++) {
+////
+////            _dObj = _arrayOfData[i];
+////            //NSData * imageData = [[NSData alloc] initWithContentsOfURL: [NSURL URLWithString:[dObj objectForKey:@"image"]]];
+////            NSLog(@"%@\n",[_dObj objectForKey:@"image"]);
+////        }
+////
+//    }
+//    else{
+//        NSLog(@"error");
+//    }
+
+
+}
+
+
+#pragma mark - Table view data source
+-(void)RemoveCell{
+    
+    NSLog(@"deletedes");
+   // [_s removeObjectsAtIndexes:_rownumber];
+}
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-#warning Incomplete implementation, return the number of sections
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-#warning Incomplete implementation, return the number of rows
-    return 0;
+    return _arrayOfData.count;
 }
 
-/*
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
     
-    // Configure the cell...
-    
+     _dict = [_arrayOfData objectAtIndex:indexPath.row];
+    cell.textLabel.text =  [_dict objectForKey:@"title"];
+  //  cell.imageView.image = [UIImage imageNamed:@"download.jpeg"];
+   // NSData * imageData = [[NSData alloc] initWithContentsOfURL: [NSURL URLWithString:[_dict objectForKey:@"image"]]];
+  //  cell.imageView.image = [UIImage imageWithData:imageData];
+   
     return cell;
 }
-*/
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    ViewController *v= [self.storyboard instantiateViewControllerWithIdentifier:@"vc"];
+    _dict = [_arrayOfData objectAtIndex:indexPath.row];
+    
+    NSData * imageData = [[NSData alloc] initWithContentsOfURL: [NSURL URLWithString:[_dict objectForKey:@"image"]]];
+             v.filmImage= [UIImage imageWithData: imageData];
+    v.filmTitle =[_dict  objectForKey:@"title"];
+    v.filmRating=[[_dict  objectForKey:@"rating"] stringValue];
+    v.filmYera =[[_dict  objectForKey:@"releaseYear"] stringValue];
+    v.filmGender =[_dict  objectForKey:@"genre"][0];
+    v.p1=self;
+    [self.navigationController pushViewController:v animated:YES];
+}
+
 
 /*
 // Override to support conditional editing of the table view.
@@ -53,17 +108,21 @@
 }
 */
 
-/*
+
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+   
+    
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
+       
+      //  [_s removeObjectAtIndex:indexPath.row];
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
+    }
+    else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
     }   
 }
-*/
+
 
 /*
 // Override to support rearranging the table view.

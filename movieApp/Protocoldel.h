@@ -7,6 +7,11 @@
 
 #ifndef Protocoldel_h
 #define Protocoldel_h
+@protocol PRemove <NSObject>
+
+-(void)RemoveCell;
+
+@end
 
 
 #endif /* Protocoldel_h */

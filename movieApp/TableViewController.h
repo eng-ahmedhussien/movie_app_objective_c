@@ -6,10 +6,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ViewController.h"
+#import "Protocoldel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TableViewController : UITableViewController
+@interface TableViewController : UITableViewController <NSURLConnectionDelegate,NSURLSessionDataDelegate,PRemove>
+@property NSMutableData *data;
+@property NSDictionary *dict;
+@property NSMutableArray *arrayOfData;
 
 @end
 
